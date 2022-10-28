@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres
+    container_name: dev8-db
+    environment:
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    networks:
+      - db
+networks:
+  db:
+    driver: bridge
+

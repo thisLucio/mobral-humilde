@@ -1,0 +1,32 @@
+server:
+  error:
+    include-stacktrace: on-param
+
+spring:
+
+  datasource:
+    hikari:
+      connectionTimeout: 1000
+      maximumPoolSize: 10
+    url: jdbc:postgresql:postgres
+    username: postgres
+    password: root
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show_sql: true
+
+#  flyway:
+#    enabled: true
+#    baseline-on-migrate: true
+#    sql-migration-separator: _
+#    locations: classpath:db/migration
+
+
+jwt:
+  secret: d7af8aaa86594228f705d5b4ccc18cfa
+  expiration: 86400000
+
+kafka.bootstrap-servers:
+  kafka:9092

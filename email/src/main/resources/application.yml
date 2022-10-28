@@ -1,0 +1,19 @@
+spring:
+  kafka:
+    bootstrap-servers: http://kafka:9092
+    group: group_email
+    user:
+      topic: topic_user
+    email-confirmation:
+      topic: topic_email_confirmation
+  mail:
+    host: smtp.gmail.com
+    username: gato.transactional@gmail.com
+    password: uxftdrlsxsyhkevy
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

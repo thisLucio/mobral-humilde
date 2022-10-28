@@ -1,0 +1,12 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      generate:ddl: true
+    show_sql: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
