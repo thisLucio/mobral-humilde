@@ -1,0 +1,128 @@
+version: "3.8"
+
+services:
+    db:
+        image: postgres
+        container_name: dev8-db
+        environment:
+          POSTGRES_PASSWORD: root
+        ports:
+          - "5432:5432"
+        networks:
+          - db
+    zookeeper:
+        image: confluentinc/cp-zookeeper:latest
+        networks: 
+            - broker-kafka
+        environment:
+            ZOOKEEPER_CLIENT_PORT: 2181
+            ZOOKEEPER_TICK_TIME: 2000
+    kafka:
+        container_name: kafka
+        image: confluentinc/cp-kafka:latest
+        networks: 
+            - broker-kafka
+        depends_on:
+            - zookeeper
+        ports:
+            - 9092:9092
+        environment:
+            KAFKA_BROKER_ID: 1
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://kafka:9092
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    kafdrop:
+        image: obsidiandynamics/kafdrop
+        networks:
+            - broker-kafka
+        depends_on:
+            - kafka
+        ports:
+            - 19000:9000
+        environment:
+            KAFKA_BROKERCONNECT: kafka:29092
+    email:
+        depends_on: 
+            - kafka
+        build: 
+            context: ./email
+            dockerfile: .docker/Dockerfile-dev
+        volumes:
+            - ./email:/app
+        networks:
+            - broker-kafka
+    backend:
+        depends_on: 
+            - db
+        build: 
+            context: ./backend
+            dockerfile: .docker/Dockerfile-dev
+        environment:
+            SPRING_DATASOURCE_URL: "jdbc:postgresql://db:5432/postgres"
+        volumes:
+            - ./backend/uploads:/app/uploads:cached
+            - ./backend:/app
+        networks:
+            - broker-kafka
+            - db
+            - backend
+    frontend:
+        build: 
+            context: ./frontend
+            dockerfile: .docker/Dockerfile-dev
+        volumes:
+            - ./frontend:/app:cached
+        networks:
+            - frontend
+    frontend-map:
+        build: 
+            context: ./Mapbox
+            dockerfile: .docker/Dockerfile-dev
+        networks:
+            - frontend-map
+    backend-chat:
+        build:
+            context: ./equipment-chat
+            dockerfile: .docker/Dockerfile-dev
+        networks:
+            - backend-chat
+            - broker-kafka
+            - db
+    frontend-chat:
+        build:
+            context: ./frontend-chat
+            dockerfile: .docker/Dockerfile-dev
+        environment: 
+            VUE_APP_API_URL: http://localhost/api/
+        volumes:
+            - ./frontend-chat:/app:cached
+        networks:
+            - frontend-chat
+    nginx:
+        depends_on:
+            - backend
+            - frontend
+            - backend-chat
+            - frontend-chat
+            - frontend-map
+        build: 
+            context: ./frontend/.docker/nginx
+            dockerfile: Dockerfile-dev
+        networks:
+            - frontend
+            - backend
+            - backend-chat
+            - frontend-chat
+            - frontend-map
+        ports:
+            - "80:80"
+networks:
+    broker-kafka:
+    backend:
+    frontend:
+    db:
+    backend-chat:
+    frontend-chat:
+    frontend-map:

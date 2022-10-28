@@ -1,0 +1,22 @@
+spring:
+  hibernate:
+    physical_naming_strategy: com.solinftec.equipment.equipmentchat.config.PhysicalNamingStrategyImpl
+  datasource:
+    url: jdbc:postgresql://db:5432/postgres
+    username: postgres
+    password: root
+  json:
+    add:
+      type:
+        headers: false
+  kafka:
+    bootstrap-servers: http://kafka:9092
+    consumer:
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: '*'
+
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

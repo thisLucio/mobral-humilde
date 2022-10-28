@@ -1,0 +1,37 @@
+server:
+  error:
+    include-stacktrace: on-param
+
+spring:
+  #  servlet: # Um limitador de tamanho de imagem em @Multipart.
+  #    multipart:
+  #      max-file-size: 128KB
+  #      max-request-size: 128KB
+  jpa:
+    hibernate:
+      ddl-auto: update # Deve activar para utilização do serviço de Postgres.
+    #      ddl-auto: create-drop # Para os testes automatizados.
+    #    generate:ddl: true # Para os testes automatizados.
+    show_sql: true
+  #  flyway:
+  #    enabled: false
+  datasource:
+    hikari:
+      connectionTimeout: 1000
+      maximumPoolSize: 10
+    url: jdbc:postgresql:postgres
+    username: postgres
+    password: root
+
+jwt:
+  secret: d7af8aaa86594228f705d5b4ccc18cfa
+  expiration: 86400000
+
+#logging: # Para os testes automatizados, redução de log em console.
+#  level:
+#    org:
+#      hibernate:
+#        SQL: DEBUG
+
+kafka.bootstrap-servers:
+  kafka:9092

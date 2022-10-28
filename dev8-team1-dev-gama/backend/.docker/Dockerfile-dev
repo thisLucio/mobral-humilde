@@ -1,0 +1,5 @@
+FROM openjdk:16-alpine as build
+WORKDIR /app
+COPY ./target/dev8api*.jar /app.jar
+EXPOSE 8080
+CMD ["java", "-jar", "/app.jar"]
